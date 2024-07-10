@@ -3,3 +3,6 @@
 public/stockfish/stockfish-ubuntu-x86-64-avx2
 public/stockfish/stockfish
 .DS_Store
+ next-env.d.ts
+ serverless.yml
+tailwind.config.ts
