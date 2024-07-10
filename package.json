@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "node --experimental-wasm-threads --experimental-wasm-bulk-memory stockfish.js",
     "lint": "next lint"
   },
