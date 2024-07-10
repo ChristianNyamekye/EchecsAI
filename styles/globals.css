@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+  
+
+
+
+html {
+background-color: #31363F;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 100px;
+  font-size: 2.5rem;
+  font-family: 'Times New Roman', Times, serif;
+  color: #fff;
+}
+
+body {
+  height: 500px;
+  margin: 0;
+  font-family: 'Times New Roman', Times, serif;
+  /* background-color: #000; */
+  /* color: #fff; */
+}
+
+section {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.progress {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #0070f3;
+  transform-origin: 0%;
+}
+
+
+/*menu styles*/
+.menu-item {
+  margin-bottom: 8px;
+}
+
+/* .text-input {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 100%;
+} */
+
+.switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s forwards;
+}
