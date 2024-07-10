@@ -6,3 +6,4 @@ public/stockfish/stockfish
  next-env.d.ts
  serverless.yml
 tailwind.config.ts
+  .next/
