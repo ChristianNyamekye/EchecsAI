@@ -257,19 +257,17 @@ export function ChessboardComponent() {
       }
 
       const data = await response.json();
-      const { outputPath } = data;
-
 
       // const data = await response.json();
-      // setSpeechUrl(outputPath);
       const newSpeechUrl = data.outputPath;
 
       // Update the typedExplanations array with the new speech URL
       setTypedExplanations((prev) =>
         prev.map((item, idx) =>
-          idx === index ? { ...item, speechUrl: outputPath } : item
+          idx === index ? { ...item, speechUrl: data.url } : item
         )
       );
+      // console.log(`${outputPath}, ${data.url}`);
     } catch (error) {
       console.error("Error fetching speech:", error);
     }
