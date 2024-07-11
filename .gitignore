@@ -19,3 +19,7 @@ stockfish-cloud-function
 keyfile_base64.txt
 .gcloudignore
 Dockerfile
+
+google-cloud-sdk
+next-env.d.ts
+.next/
