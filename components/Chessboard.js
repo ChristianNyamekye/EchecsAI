@@ -162,12 +162,9 @@ export function ChessboardComponent() {
 
       eventSource.onmessage = (event) => {
         setExplanation((prevExplanation) => prevExplanation + event.data);
-        // setAccumulatedData(prevData => prevData + event.data);
-        // console.log('Received chunk:', event.data);
+
         accumulatedData += event.data;
-        // console.log('Received chunk:', accumulatedData);
         
-        // console.log(`EXPLANATION: ${explanation}`);
       };
 
 
