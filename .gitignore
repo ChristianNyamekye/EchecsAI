@@ -17,3 +17,5 @@ amplify.yml
 
 stockfish-cloud-function
 keyfile_base64.txt
+.gcloudignore
+Dockerfile
