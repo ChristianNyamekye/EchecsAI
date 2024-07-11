@@ -6,6 +6,7 @@ function Document() {
     <Html lang="en">
       <Head>
         <ColorSchemeScript defaultColorScheme="auto" />
+         <link rel="icon" href="../../public/images/favicon.png" />
       </Head>
       <body>
         <Main />
