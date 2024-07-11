@@ -7,3 +7,12 @@ public/stockfish/stockfish
  serverless.yml
 tailwind.config.ts
   .next/
+
+# amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*
+.vercel
+amplify.yml
+
+stockfish-cloud-function
