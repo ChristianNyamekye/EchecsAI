@@ -101,13 +101,18 @@ export function ChessboardComponent() {
       });
 
       const data = await response.json();
+      console.log("return1EEd json: ", JSON.stringify(data));
       // setBestMove(data.bestMove);
 
       if (response.ok) {
-        setBestMove(data.bestMove);
-        setScore(data.score);
-        setDepth(data.depth);
-        setPv(data.pv);
+        // setBestMove(data.bestMove);
+        // setScore(data.score);
+        // setDepth(data.depth);
+        // setPv(data.pv);
+        setBestMove(data.recMove);
+        setScore(data.recScore);
+        setDepth(data.recDepth);
+        setPv(data.recPv);
       } else {
         console.error("Failed to fetch the best move:", data.error);
         showNotification({
