@@ -3,14 +3,20 @@ import { FaChessKing } from 'react-icons/fa'; // Importing a chess icon from Rea
 
 const Header = () => {
   return (
-    <header style={{height:"81px"}} className=" text-white mb-2 py-4 flex justify-start items-center rounded-lg">
+    <header
+      style={{ height: "81px" }}
+      className=" text-white mb-2 py-4 flex justify-start items-center rounded-lg"
+    >
       <div className="flex justify-center items-center">
         <a href="#" className="text-xl font-bold text-[black]">
           <img
             src="../images/echecsai.png"
             alt="EchecsAI Logo"
-            style={{height:"200px", width:"190px"}}
+            style={{ height: "200px", width: "190px" }}
           />
+        </a>
+        <a href="/" className="px-4 py-2 bg-blue-500 rounded-md text-white">
+          Home
         </a>
         {/* <h1 className="text-lg font-bold flex justify-center items-center">
           <FaChessKing className="mr-2 text-[#60a5fa]" size={30} />

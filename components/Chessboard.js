@@ -17,7 +17,16 @@ import styles from "./ChessboardComponent.module.css";
 import floatingLabelStyles from "./FloatingLabelInput.module.css";
 
 
-import { Container, Box, Button, TextInput, Tooltip, Progress, Text, Group } from "@mantine/core";
+import {
+  Container,
+  Box,
+  Button,
+  TextInput,
+  Tooltip,
+  Radio,
+  RadioGroup,
+  Group,
+} from "@mantine/core";
 
 import HoverEffect from "./HoverEffect";
 import TextGenerateEffect from './TextGenerateEffect';
@@ -36,6 +45,7 @@ export function ChessboardComponent() {
   const [bestMove, setBestMove] = useState("");
   const [score, setScore] = useState("");
   const [pv, setPv] = useState("");
+  const [movesToMate, setMovesToMate] = useState("0");
   const [isFlipped, setIsFlipped] = useState(false);
   const [history, setHistory] = useState([]);
   const [explanation, setExplanation] = useState("");
@@ -43,8 +53,10 @@ export function ChessboardComponent() {
   // const [typedExplanation, setTypedExplanation] = useState("");
   const [typedExplanations, setTypedExplanations] = useState([]); // Each item is { text: string, speechUrl: string }
 
+  const [playerToMove, setPlayerToMove] = useState('w');
   const [showTypedExplanation, setShowTypedExplanation] = useState(false);
   const [speechUrl, setSpeechUrl] = useState("");
+
   const [example, setExample] = useState(
     "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains."
   );
@@ -66,9 +78,21 @@ export function ChessboardComponent() {
   const [premove, setPremove] = useState(null);
 
   useEffect(() => {
-    const updatedGame = new Chess(position);
-    setGame(updatedGame);
+    if (position) {
+      try {
+        const updatedGame = new Chess(position);
+        setGame(updatedGame);
+      } catch (error) {
+        showNotification({
+          title: 'Invalid FEN',
+          message: 'The FEN notation provided is invalid. Please provide a valid FEN string.',
+          color: 'red',
+        });
+        setGame(new Chess()); // Reset to a default game if FEN is invalid
+      }
+    }
   }, [position]);
+
 
   useEffect(() => {
     // Function to scroll to the bottom of the chat
@@ -101,7 +125,7 @@ export function ChessboardComponent() {
       });
 
       const data = await response.json();
-      console.log("return1EEd json: ", JSON.stringify(data));
+      // console.log("return1EEd json: ", JSON.stringify(data));
       // setBestMove(data.bestMove);
 
       if (response.ok) {
@@ -113,6 +137,7 @@ export function ChessboardComponent() {
         setScore(data.recScore);
         setDepth(data.recDepth);
         setPv(data.recPv);
+        setMovesToMate(data.recMovesToMate)
       } else {
         console.error("Failed to fetch the best move:", data.error);
         showNotification({
@@ -149,6 +174,7 @@ export function ChessboardComponent() {
           history: history,
           pv: pv,
           recommendedMove: recommendedMove,
+          movesToMate: movesToMate,
         }),
       });
 
@@ -184,7 +210,8 @@ export function ChessboardComponent() {
             player: completeJsonData.player_to_move,
             implementation: completeJsonData.alternative_implementation,
             relevance: formattedRelevances,
-            funFact: completeJsonData.funFact
+            funFact: completeJsonData.funFact,
+            movesToMate: completeJsonData.movesToMate
           });
           // console.log("Explanations:", explanations);
 
@@ -233,9 +260,10 @@ export function ChessboardComponent() {
 
       const explanation = typedExplanations[index];
       const combinedText = `The ${explanation.title}. Player to move is: ${explanation.player}. ` +
-                          `Others ways to achieve similar results would be: ${explanation.implementation}. ` +
+                          `The sequence of moves that would be best for both sides include: ${explanation.implementation}. ` +
                           `Relevance: ${explanation.relevance}. ` +
-                          `Food for thought: ${explanation.funFact}`;
+                          `Food for thought: ${explanation.funFact}` + 
+                          `Mate: ${explanation.movesToMate}. `;
       // console.log("combined text:", combinedText);
       // console.log("typedExplanation text:", typedExplanation);
 
@@ -291,30 +319,60 @@ export function ChessboardComponent() {
     }
   };
 
-
-  const updateGameFromFen = () => {
+  const updateGameFromFen = (fen) => {
     try {
-      const newGame = new Chess();
-      if (newGame.load(position)) {
-        setGame(newGame);
-        setPosition(newGame.fen()); // Ensure position is also updated
-      } else {
-        showNotification({
-          title: "Invalid FEN",
-          message: "The FEN string provided is invalid.",
-          color: "red",
-        });
+      // Automatically fill in missing fields if necessary
+      const fields = fen.split(' ');
+      while (fields.length < 6) {
+        fields.push('1'); // Add default placeholder values
       }
-      // 4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1
 
+      // Ensure correct values for missing fields
+      if (fields.length === 6) {
+        if (!['w', 'b'].includes(fields[1])) {
+          fields[1] = `${playerToMove}`; // Default to white's turn
+        }
+        if (!/^[KQkq-]+$/.test(fields[2])) {
+          fields[2] = '-'; // Default castling rights
+        }
+        if (!/^(-|[a-h][36])$/.test(fields[3])) {
+          fields[3] = '-'; // Default en passant
+        }
+        if (!/^\d+$/.test(fields[4])) {
+          fields[4] = '0'; // Default halfmove clock
+        }
+        if (!/^\d+$/.test(fields[5])) {
+          fields[5] = '1'; // Default fullmove number
+        }
+      }
+
+      fen = fields.join(' ');
+
+      const game = new Chess(fen);
+      setPosition(fen);
+      setGame(game);
     } catch (error) {
-      console.error("Error updating game from FEN:", error);
       showNotification({
-        title: "Error",
-        message: "Error processing FEN string.",
-        color: "red",
+        title: 'Invalid FEN',
+        message: 'The FEN notation provided is invalid. Please provide a valid FEN string.',
+        color: 'red',
       });
     }
+  };
+
+  const handleFenChange = (event) => {
+    let fen = event.target.value.trim();
+    
+    if (!fen) {
+      showNotification({
+        title: 'Empty FEN',
+        message: 'FEN notation cannot be empty. Please provide a valid FEN string.',
+        color: 'red',
+      });
+      return;
+    }
+
+    updateGameFromFen(fen);
   };
 
   const hoverItems = [
@@ -400,6 +458,7 @@ export function ChessboardComponent() {
         implementation: newExplanation.implementation,
         relevance: newExplanation.relevance,
         funFact: newExplanation.funFact,
+        movesToMate: newExplanation.movesToMate,
         speechUrl: "" 
       }
     ]);
@@ -500,12 +559,14 @@ export function ChessboardComponent() {
 
   return (
     <div>
-      <Header /> 
+      <Header />
       <main>
         <Container
-          style={{
-            // padding: 50,
-          }}
+          style={
+            {
+              // padding: 50,
+            }
+          }
           fluid
         >
           {/* <Skeleton
@@ -519,6 +580,25 @@ export function ChessboardComponent() {
           <Box>
             <div className="flex flex-row items-center justify-start w-62 overflow-x-auto">
               <HoverEffect items={hoverItems} />
+              <Radio.Group
+                value={playerToMove}
+                onChange={(value) => {
+                  setPlayerToMove(value);
+                  // Update the FEN string to reflect the player to move
+                  const fields = position.split(' ');
+                  if (fields.length >= 2) {
+                    fields[1] = value;
+                    const updatedFen = fields.join(' ');
+                    setPosition(updatedFen);
+                  }
+                }}
+                label="Player to move"
+                withAsterisk
+                style={{ display: 'flex', flexDirection: 'row', color: 'white' }}
+              >
+                <Radio value="w" label="White" />
+                <Radio value="b" label="Black" />
+              </Radio.Group>
             </div>
             <Box
               style={{
@@ -618,9 +698,8 @@ export function ChessboardComponent() {
                         radius="lg"
                         width="200px"
                         ml="120px"
-                      
-                        loading={isCalculating} 
-                        loaderProps={{ type: 'dots', color:"black" }}
+                        loading={isCalculating}
+                        loaderProps={{ type: "dots", color: "black" }}
                       >
                         Calculate
                       </Button>
@@ -645,11 +724,12 @@ export function ChessboardComponent() {
                             label="FEN:"
                             value={position}
                             // onChange={(event) => setPosition(event.target.value)}
-                            onChange={(event) => {
-                              const fen = event.target.value;
-                              setPosition(fen); // This will update the position state
-                              updateGameFromFen(fen); // Assuming you have a function to update the game state
-                            }}
+                            onChange={handleFenChange}
+                            // onChange={(event) => {
+                            //   const fen = event.target.value;
+                            //   setPosition(fen); // This will update the position state
+                            //   updateGameFromFen(fen); // Assuming you have a function to update the game state
+                            // }}
                           />
                         </Group>
                       </Box>
@@ -723,6 +803,10 @@ export function ChessboardComponent() {
                           <div class="text-gray-300 mb-4">
                             <span>Fun Fact: </span>
                             <span>{explanation.funFact}</span>
+                          </div>
+                          <div class="text-gray-300 mb-4">
+                            <span>Check Mate: </span>
+                            <span>{explanation.movesToMate}</span>
                           </div>
                         </div>
                         <div
@@ -811,7 +895,11 @@ export function ChessboardComponent() {
                 </Box>
                 <div className={styles.menuStyle} style={{ width: "600px" }}>
                   <div className="relative  justify-left">
-                    <Tooltip label="Analyze best move" position="bottom" withArrow>
+                    <Tooltip
+                      label="Analyze best move"
+                      position="bottom"
+                      withArrow
+                    >
                       {/* <button
                         className="relative group inline-flex h-12 w-20 overflow-hidden rounded-full p-[1px] items-left justify-left"
                         onClick={() => fetchExplanation(bestMove)}
@@ -828,9 +916,9 @@ export function ChessboardComponent() {
                         color="1f2937" // Ensure this is a valid color or style this appropriately
                         size="md"
                         radius="lg"
-                        style={{ width: '100px' }} // Use inline style or adjust according to your setup
+                        style={{ width: "100px" }} // Use inline style or adjust according to your setup
                         loading={isAnalyzing} // This will enable the loading indicator when isCalculating is true
-                        loaderProps={{ type: 'dots', color: "black" }} // Customize the loader appearance
+                        loaderProps={{ type: "dots", color: "black" }} // Customize the loader appearance
                       >
                         <RiAiGenerate />
                       </Button>

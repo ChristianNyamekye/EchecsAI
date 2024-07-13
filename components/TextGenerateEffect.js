@@ -13,7 +13,7 @@ export const TextGenerateEffect = ({
   const textRef = useRef(explanation);
 
   // Prepare the content from the explanation object
-  const formattedText = `${explanation.title}\nPlayer: ${explanation.player}\n Alternative Implementation: ${explanation.implementation}\nRelevance: ${explanation.relevance}\nFun Fact: ${explanation.funFact}`;
+  const formattedText = `${explanation.title}\nPlayer: ${explanation.player}\n Alternative Implementation: ${explanation.implementation}\nRelevance: ${explanation.relevance}\nFun Fact: ${explanation.funFact}\n Check Mate: ${explanation.movesToMate}`;
 
   useEffect(() => {
     const typeEffect = () => {

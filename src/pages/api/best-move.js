@@ -22,9 +22,10 @@
 
 //     // You may need to adjust how the best move is calculated based on the color
 //     // const bestMove = await getBestMove(fen);
-//     const { bestMove, score, depth, pv } = await analyzePosition(fen, rDepth, parseInt(time));
-
-//     res.status(200).json({ bestMove, score, depth, pv });
+//     console.log(`tfttkfktfktftktfktfktktk!!!`);
+//     const { bestMove, score, depth, pv, movesToMate } = await analyzePosition(fen, rDepth, parseInt(time));
+//     console.log(`MATE:  ${movesToMate}`);
+//     res.status(200).json({ bestMove, score, depth, pv, movesToMate });
 //   } else {
 //     console.log(`cccccccc!!!`);
 //     res.status(405).end(); // Method Not Allowed
@@ -89,17 +90,23 @@ export default async (req, res) => {
     let recDepth = null;
     let recScore = null;
     let recPv = null;
+    let recMovesToMate = 0;
 
     const data = await response.json();
 
     // Convert depth to integer
     recDepth = parseInt(data.depth, 10);
 
-    // Convert score to floating-point number
+    // Convert score 
     recScore = data.score;
 
     // Extract the principal variation text up to the first newline character
     recPv = data.pv.split("\n")[0];
+
+    // Convert score 
+    if (data && data.movesToMate !== undefined && data.movesToMate !== null) {
+      recMovesToMate = data.movesToMate;
+    }
 
     // Extract the move from the pv string between "bestmove" and "ponder"
     const bestMoveRegex = /bestmove\s+(\S+)\s+ponder/;
@@ -110,14 +117,17 @@ export default async (req, res) => {
         recMove = recPv.split(" ")[0]; // Fallback if no match is found
     }
 
-    console.log(`best move: ${recMove} depth: ${recDepth} score: ${recScore} pv: ${recPv}`);
+  
 
-    res.status(200).json({ recMove, recScore, recDepth, recPv });
+    console.log(
+      `best move: ${recMove} depth: ${recDepth} score: ${recScore} pv: ${recPv} recMateinMoves: ${recMovesToMate}`
+    );
 
-    console.log("return1EEd json: ", JSON.stringify(data));
+    res.status(200).json({ recMove, recScore, recDepth, recPv, recMovesToMate });
+
+    // console.log("return1EEd json: ", JSON.stringify(data));
     // res.status(200).json(data);
   } else {
     res.status(405).end(); // Method Not Allowed
   }
 };
-

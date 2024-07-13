@@ -10,17 +10,19 @@ let promptData = null;
 export default async function handler(req, res) {
   if (req.method === "POST") {
     // Handle POST request to receive initial data
-    const { fen, history, pv, recommendedMove } = req.body;
+    const { fen, history, pv, recommendedMove, movesToMate } = req.body;
 
     if (!fen || !history || !recommendedMove) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-
+     
     promptData = {
       fen,
       history,
       pv,
       recommendedMove,
+      movesToMate,
+
     };
 
     res.status(200).json({ message: "Data received, ready to stream" });
@@ -29,16 +31,18 @@ export default async function handler(req, res) {
     if (!promptData) {
       return res.status(400).json({ error: "No prompt data available" });
     }
+    
 
-    const { fen, history, pv, recommendedMove } = promptData;
+    const { fen, history, pv, recommendedMove, movesToMate } = promptData;
+    console.log(`movesToMate: ${movesToMate}`);
 
-    const prompt = `Given the current FEN position: ${fen} and the following game history: ${history}, explain why the recommended move ${recommendedMove} by Stockfish is optimal. Can this objective be achieved with any alternative moves (${pv} should help you with that)?  Provide details on grandmasters who've used this move and how it can help improve one's chess skills.`;
+    const prompt = `Given the current FEN position: ${fen} and the following game history: ${history}, explain why the recommended move ${recommendedMove} by Stockfish is optimal. Can this objective be achieved with any alternative moves (${pv} should help you with that)?  Provide random facts on grandmasters who've used this move and how it can help improve one's chess skills. Checkmate can be achieved in ${movesToMate} moves`;
 
     const messages = [
       {
         role: "system",
         content:
-          "You are a chess coach. Make your answers as short as possible. If you can answer in a single word do that. If you can answer in a single sentence do that. Only use multiple sentences or paragraphs when it’s necessary to convey the meaning of your answer in longer responses. you should return a json in the form with required fields: recommended, player to move (should be white or black), alternative implementation (should be a string. information from provided pv can help), relevances(should be a string of sentences), funFact. JSON return should be formatted in a way that can be easily parsed by doing the following: Remove the backticks: Ensure that the JSON data being sent and received does not include Markdown like triple backticks (```) or other extraneous characters. Check both the sending and receiving ends of your data transfer. Correct JSON Key Syntax: JSON keys should be enclosed in double quotes. Your JSON keys such as recommended, player_to_move, etc., are correct, but ensure all are consistently formatted. Correct Data Formatting: Make sure the entire structure of the JSON data is correct, including commas, brackets, and braces. ",
+          "You are a chess coach. Make your answers as short as possible. If you can answer in a single word do that. If you can answer in a single sentence do that. Only use multiple sentences or paragraphs when it’s necessary to convey the meaning of your answer in longer responses. you should return a json in the form with required fields: recommended, player to move (should be white or black), alternative implementation (should be a string. information from provided pv can help), relevances(should be a string of sentences), funFact (any random yet educational fact about chess that relates to the move or the game state provided), moves To Mate (if 0 return a string that says something like no possible moves to mate at this time (or a variation)) else should be a string that provides a short analysis of the possible moves that can achieve a mate in movesToMate moves) . JSON return should be formatted in a way that can be easily parsed by doing the following: Remove the backticks: Ensure that the JSON data being sent and received does not include Markdown like triple backticks (```) or other extraneous characters. Check both the sending and receiving ends of your data transfer. Correct JSON Key Syntax: JSON keys should be enclosed in double quotes. Your JSON keys such as recommended, player_to_move, etc., are correct, but ensure all are consistently formatted. Correct Data Formatting: Make sure the entire structure of the JSON data is correct, including commas, brackets, and braces. ",
       },
       { role: "user", content: prompt },
     ];
