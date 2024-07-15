@@ -9,7 +9,6 @@ import { RiAiGenerate } from "react-icons/ri";
 import { HiSpeakerWave } from "react-icons/hi2";
 import { FaRegStopCircle } from "react-icons/fa";
 
-import { FaCirclePlay } from "react-icons/fa6";
 import { BsSoundwave } from "react-icons/bs";
 
 
@@ -85,7 +84,7 @@ export function ChessboardComponent() {
       } catch (error) {
         showNotification({
           title: 'Invalid FEN',
-          message: 'The FEN notation provided is invalid. Please provide a valid FEN string.',
+          message: 'The FEN provided is invalid. Please provide a valid FEN string.',
           color: 'red',
         });
         setGame(new Chess()); // Reset to a default game if FEN is invalid
@@ -680,14 +679,6 @@ export function ChessboardComponent() {
                         </span>
                       </button>
                     </div>
-
-                    {/* <button
-                      className="inline-flex h-10 animate-shimmer items-center justify-center rounded-xl border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#C0C0C0,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-transform transform-gpu  hover:animate-[shimmer_4s_linear_infinite] hover:text-white hover:bg-[linear-gradient(110deg,#000103,45%,#FFD700,55%,#000103)]"
-                      onClick={handleCalculate}
-                      style={{ marginLeft: "120px" }}
-                    >
-                      Calculate
-                    </button> */}
                     <>
                       <Button
                         className={styles.calculate}
@@ -704,13 +695,6 @@ export function ChessboardComponent() {
                         Calculate
                       </Button>
                     </>
-                    {/* <button
-                      className="inline-flex h-10  items-center justify-center bg-[#1f2937] text-white px-4 py-2 rounded-xl text-lg font-semibold  hover:animate-[shimmer_4s_linear_infinite] hover:text-[#00dac6] hover:bg-gray-700"
-                      onClick={handleCalculate}
-                      style={{ marginLeft: "120px" }}
-                    >
-                      Calculate
-                    </button> */}
                   </div>
                 </Box>
               </Box>

@@ -62,15 +62,32 @@
 
 .calculate {
   background-color: #1f2937;
+  transition: transform 0.1s ease-in-out;
   &:hover {
     background-color: #2c3639;
     color: #00dac6;
   }
 }
 
+.calculate:active {
+  transform: scale(0.95);
+}
+
+.analyzeStyle {
+  display: flex;
+  /* gap: 10px; */
+  border: 0.5px solid #ffffff33;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 1);
+  /* padding: 10px; */
+  width: 550px;
+  /* background-color: #00dac6;  */
+  background-color: transparent;
+}
+
 .analyze {
-  background-color: green;
-  transition: background-color 250ms ease-in-out;
+  background-color: #1f2937;
+  transition: background-color 250ms transform 0.1s ease-in-out;
   &:hover {
     background-color: #D83A56;
     color: #00dac6;
@@ -79,4 +96,8 @@
 
 .analyze:hover {
   background-color: var(--indigo-500); /* Example using a Tailwind color variable */
+}
+
+.analyze:active {
+  transform: scale(0.95);
 }
