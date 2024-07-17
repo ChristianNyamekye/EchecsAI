@@ -49,7 +49,7 @@ import {
   onSquareClick,
   onDrop,
   initiateFetchSpeech,
-} from './chessUtils';
+} from '../../utils/chessUtils';
 
 
 
