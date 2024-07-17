@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChessBoard, faRedoAlt, faUndoAlt, faSyncAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 import styles from "/components/ChessboardComponent.module.css";
 import TextGenerateEffect from '/components/TextGenerateEffect';
+import UploadForm from '/components/UploadForm';
+
 import {
   Container,
   Box,
@@ -88,6 +90,9 @@ const ChessGame = () => {
 
   // const [accumulatedData, setAccumulatedData] = useState('');
   const [stockfishLevel, setStockfishLevel] = useState(0);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [screenshotFen, setScreenshotFen] = useState("");
+  const [isCopied, setIsCopied] = useState(false);
 
   let accumulatedData = "";
 
@@ -134,6 +139,7 @@ const ChessGame = () => {
   useEffect(() => {
     setGame(new Chess());
     setPosition(game.fen());
+    resetGame(setGame, setPosition);
     setSelectedSquare(null);
     setBestMove("");
     setScore("");
@@ -235,9 +241,23 @@ const ChessGame = () => {
     await handleMoveWrapper(sourceSquare, targetSquare, piece);
   };
 
-  // const handleMove = (move) => {
-  //   setPosition(move.fen);
-  // };
+  const handleUpload = (data) => {
+    
+    setUploadedFile(data.imageUrl);
+    setScreenshotFen(data.fen);
+    console.log("Uploaded File URL:", uploadedFile);
+    console.log(`screenshot fen: ${screenshotFen}`);
+  };
+
+  const handleCopy = async () => {
+      try {
+          await navigator.clipboard.writeText(screenshotFen);
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000); // Reset icon after 2 seconds
+      } catch (err) {
+          console.error('Failed to copy text: ', err);
+      }
+  };
 
   return (
     <div className="h-screen w-screen bg-gray-900 text-white flex flex-col">
@@ -403,7 +423,10 @@ const ChessGame = () => {
                 </button>
                 <button
                   className="relative group inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-800 bg-gradient-to-r from-gray-900 to-gray-700 text-white transition-colors focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-offset-gray-900 focus:ring-[#00dac6]"
-                  onClick={() => {resetGame(setGame, setPosition); chessboardRef.current?.clearPremoves();}}
+                  onClick={() => {
+                    resetGame(setGame, setPosition);
+                    chessboardRef.current?.clearPremoves();
+                  }}
                 >
                   <span className="icon-wrapper group-hover:animate-spin group-hover:text-[#00dac6]">
                     <FontAwesomeIcon icon={faRedoAlt} />
@@ -414,7 +437,10 @@ const ChessGame = () => {
                 </button>
                 <button
                   className="relative group inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-800 bg-gradient-to-r from-gray-900 to-gray-700 text-white transition-colors focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-offset-gray-900 focus:ring-[#00dac6]"
-                  onClick={() => {undoMove(game, setPosition); chessboardRef.current?.clearPremoves();}}
+                  onClick={() => {
+                    undoMove(game, setPosition);
+                    chessboardRef.current?.clearPremoves();
+                  }}
                 >
                   <span className="icon-wrapper group-hover:animate-reverse-spin group-hover:text-[#00dac6]">
                     <FontAwesomeIcon icon={faUndoAlt} />
@@ -615,7 +641,41 @@ const ChessGame = () => {
               </Box>
             </Box>
             <div className="relative flex-row">
-              <div className="relative flex flex-1 items-center space-x-6  h-[380px] w-[280px] border border-radius-md border-white border-opacity-20 rounded-lg"></div>
+              <div className="relative flex-col flex-1 items-center justify-center space-y-4 h-[380px] w-[280px] overflow-y-auto border border-radius-md border-white border-opacity-20 rounded-lg">
+                  <h1 className="text-lg mt-6 font-bold text-white-800">
+                      Image to FEN
+                  </h1>
+                  <div className="flex flex-col items-center space-y-2">
+                      <UploadForm onUpload={handleUpload} />
+                  </div>
+                  {uploadedFile && (
+                      <div className="flex flex-col items-center">
+                          {screenshotFen && (
+                            <div className="relative bg-gray-100 rounded-lg shadow flex items-center space-x-2 w-[250px] h-8 overflow-hidden overflow-x-auto">
+                              <p className="text-sm md:text-md text-gray-800 whitespace-nowrap px-2">
+                                  FEN: <span className="font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-300 cursor-pointer">{screenshotFen}</span>
+                              </p>
+                              <button
+                                  onClick={handleCopy}
+                                  className="p-2 rounded-full hover:bg-gray-200 transition-colors duration-300"
+                                  title="Copy FEN"
+                              >
+                                  {isCopied ? (
+                                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="green" className="w-6 h-6">
+                                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-11.293a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L8 11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                      </svg>
+                                  ) : (
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="black" className="w-6 h-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15.75h7.5m-7.5-4.5h7.5m-7.5-4.5h7.5M6 21a3 3 0 003-3V6a3 3 0 00-3-3H3a3 3 0 00-3 3v12a3 3 0 003 3h3zm9-18a3 3 0 013 3v12a3 3 0 01-3 3h-3a3 3 0 01-3-3V6a3 3 0 013-3h3z" />
+                                    </svg>
+                                  )}
+                              </button>
+                            </div>
+                          )}
+                      </div>
+                    )
+                  }
+              </div>
               <div className={" flex mt-[15px] bottom-[-30px] right-[100px]"}>
                 <Tooltip label="Analyze best move" position="bottom" withArrow>
                   <Button

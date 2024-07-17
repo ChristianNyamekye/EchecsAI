@@ -487,7 +487,7 @@ export const handleDifficultyChange = (value, setDifficulty, setStockfishLevel, 
     }
   };
 
-  export const handleCalculate = async (
+export const handleCalculate = async (
   position,
   depth,
   time,
@@ -522,6 +522,7 @@ export const handleDifficultyChange = (value, setDifficulty, setStockfishLevel, 
       setDepth(data.recDepth);
       setPv(data.recPv);
       setMovesToMate(data.recMovesToMate);
+      setIsCalculating(false);
       return data.recMove;
     } else {
       console.error("Failed to fetch the best move:", data.error);
@@ -532,6 +533,7 @@ export const handleDifficultyChange = (value, setDifficulty, setStockfishLevel, 
       autoClose: 3000,
       style: { backgroundColor: '#1f2937', color:'white' },
       });
+      setIsCalculating(false);
     }
   } catch (error) {
     console.error("Error during calculation:", error);
@@ -542,7 +544,8 @@ export const handleDifficultyChange = (value, setDifficulty, setStockfishLevel, 
       autoClose: 3000,
       style: { backgroundColor: '#1f2937', color:'white' },
       });
+     setIsCalculating(false);
 
   }
-  setIsCalculating(false);
+ 
 };
