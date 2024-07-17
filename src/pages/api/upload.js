@@ -120,6 +120,7 @@ const bucketName = process.env.GCLOUD_STORAGE_BUCKET;
 apiRoute.use(upload.single("file"));
 
 apiRoute.post(async (req, res) => {
+  initializeGCloudCredentials();
   try {
     const file = req.file; // The file uploaded by multer
 
