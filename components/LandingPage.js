@@ -106,8 +106,8 @@ const LandingPage = () => {
         style={{
           backgroundImage:
             // 'url("https://images.unsplash.com/photo-1560174038-da43ac74f01b?q=80&w=2914&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
-            'url("https://images.unsplash.com/photo-1645765734294-ad4719c296e0?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
-            backgroundSize: "cover",
+            'url("https://images.unsplash.com/photo-1634702689077-298371d09d23?q=80&w=2881&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
+          backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
